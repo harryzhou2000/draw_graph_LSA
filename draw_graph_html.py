@@ -1,8 +1,12 @@
 import dash
-from dash import html
+from dash import html, Input, Output
 import dash_cytoscape as cyto
 import numpy as np
 import math
+
+fname = "gseq_out_18_01.txt"
+# fname = "gseq_out_19_03.txt"
+# fname = "gseq_out_20_02.txt"
 
 # Example tag names and residual matrix
 tag_names = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -17,9 +21,6 @@ residual_matrix = (
     )
     - 0.8
 )
-fname = "gseq_out_18_01.txt"
-# fname = "gseq_out_19_03.txt"
-# fname = "gseq_out_20_02.txt"
 
 from gseq_read import gseq_read_res_mat
 
@@ -115,7 +116,7 @@ app.layout = html.Div(
                 "radius": 150,  # Adjust the radius of the circle (larger = more spread out)
                 "nodeSpacing": 35,  # Adjust spacing between nodes
             },
-            style={"width": "100%", "height": "800px"},
+            style={"width": "100%", "height": "700px"},
             elements=nodes + edges,
             stylesheet=[
                 {
@@ -192,8 +193,24 @@ app.layout = html.Div(
                 },
             ],
         )
+        ,
+    html.Button("Download PNG", id='btn-download', n_clicks=0)
     ]
 )
 
+@app.callback(
+    Output('cytoscape-graph', 'generateImage'),
+    Input('btn-download', 'n_clicks'),
+    prevent_initial_call=True
+)
+def download_png(n_clicks):
+    return {
+        'type': 'png',
+        'action': 'download',
+        'filename': f'graph-{fname}'
+    }
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+    
